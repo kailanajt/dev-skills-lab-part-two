@@ -4,6 +4,7 @@ import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import logger from 'morgan'
+import methodOverride from 'method-override'
 import('./config/database.js')
 
 // import router
@@ -22,6 +23,7 @@ app.set(
 app.set('view engine', 'ejs')
 
 // middleware
+
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -30,10 +32,17 @@ app.use(
     path.join(path.dirname(fileURLToPath(import.meta.url)), 'public')
   )
 )
+app.use(methodOverride('_method'))
 
 // mounted routers
 app.use('/', indexRouter)
 app.use('/skills', skillsRouter)
+
+app.use(function(req, res, next) {
+  console.log('Hello SEI!')
+  req.time = new Date().toLocaleTimeString()
+  next()
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
